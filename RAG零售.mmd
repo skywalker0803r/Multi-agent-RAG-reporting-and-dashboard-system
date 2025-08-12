@@ -1,0 +1,45 @@
+graph TD
+    %% Define the style for different components
+    style A fill:#DCE8F7,stroke:#367C92,stroke-width:2px;
+    style B fill:#E7F2FF,stroke:#367C92,stroke-width:2px;
+    style C fill:#FFE0B2,stroke:#C67600,stroke-width:2px;
+    style D fill:#FFF3E0,stroke:#C67600,stroke-width:2px;
+    style E fill:#FFF3E0,stroke:#C67600,stroke-width:2px;
+    style F fill:#E0F2F1,stroke:#00796B,stroke-width:2px;
+    style G fill:#E0F2F1,stroke:#00796B,stroke-width:2px;
+    style H fill:#E0F2F1,stroke:#00796B,stroke-width:2px;
+    style I fill:#DCEDC8,stroke:#33691E,stroke-width:2px;
+    style J fill:#DCEDC8,stroke:#33691E,stroke-width:2px;
+
+    subgraph Data Layer
+        A[Retail Database] --> B(Data Fetcher Agent);
+    end
+
+    subgraph Core System & RAG Pipeline
+        B -- Raw Data --> C(Report Agent<br/>接收原始數據並為報告邏輯執行正規化);
+
+        subgraph RAG Core
+            subgraph Data Ingestion Pipeline
+                B -- Raw Data --> Data_Processor(Data Processor & Embedder);
+                Data_Processor -- Store Embeddings --> D((Vector Store<br/>包含歷史報告和政策文件的嵌入));
+            end
+
+            C -- Process Query --> Query_Embedder(Query Embedder);
+            Query_Embedder -- Similarity Search --> D;
+            D -- Retrieved Chunks --> E{LLM + RAG Logic<br/>例如：Gemini；處理查詢、檢索到的片段並生成響應};
+        end
+
+        E -- Generated Insights + Citations --> F(Excel Agent);
+        E -- Generated Insights + Citations --> G(Dashboard Agent);
+    end
+
+    subgraph Output Generation
+        F -- Create Report --> H[Excel Report];
+        G -- Create Dashboard --> I[Web Dashboard];
+    end
+
+    subgraph User & Display
+        H -- Display/Download --> J[User Interface];
+        I -- Display/Download --> J;
+        J -- User Query --> C;
+    end

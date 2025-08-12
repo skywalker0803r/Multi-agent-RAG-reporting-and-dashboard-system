@@ -1,0 +1,5 @@
+Section B — AI Diagram Design (RAG + Multi‑Agent)
+Question 3: Reporting & Dashboard via Multi‑Agent RAG
+- A nationwide retail chain wants a lightweight AI system that reads recent returns & warranty data from its database and produces an Excel report and a web dashboard with bar/line charts and brief narrative insights.
+- Sketch a high‑level multi‑agent architecture or message‑flow diagram showing data fetch/normalization, where a RAG step generates grounded insights (with citations), and how the Excel + dashboard are produced.
+- Label agents and messages; note simple assumptions (e.g., region, vector store, model). Provide a 3–4 sentence caption explaining your design choices.
