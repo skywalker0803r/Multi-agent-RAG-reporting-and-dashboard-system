@@ -31,7 +31,7 @@ class ReportService:
         # In a real scenario, you might add filters here based on query intent or metadata
         search_results = self.pinecone_index.query(
             vector=query_embedding,
-            top_k=5, # Retrieve top 5 most relevant chunks
+                        top_k=50, # Retrieve top 50 most relevant chunks
             include_metadata=True
         )
 
@@ -41,6 +41,25 @@ class ReportService:
         
         if not context:
             context = "No relevant context found in the database."
+
+        # Check if it's a counting query
+        is_counting_query = "幾筆" in query or "總數" in query or "數量" in query
+
+        if is_counting_query:
+            try:
+                index_stats = self.pinecone_index.describe_index_stats()
+                # Access the vector_count from the correct namespace/dimension_stats
+                # Assuming a single namespace or the default empty string namespace
+                total_vectors = 0
+                if index_stats and index_stats.dimension_stats: # Add check for None
+                    if '' in index_stats.dimension_stats: # Check for default namespace
+                        total_vectors = index_stats.dimension_stats[''].vector_count
+                    elif self.pinecone_index_name in index_stats.dimension_stats: # Check for named namespace
+                        total_vectors = index_stats.dimension_stats[self.pinecone_index_name].vector_count
+                
+                context += f"\n\nTotal vectors in Pinecone index: {total_vectors}."
+            except Exception as e:
+                print(f"Error getting Pinecone index stats: {e}")
 
         # 3. Integrate with LLM to generate insights
         llm_prompt = f"Generate a detailed report based on the following query and context. Focus on key findings and provide actionable insights. Ensure to cite sources from the context if possible. Respond in Chinese.\nQuery: {query}"

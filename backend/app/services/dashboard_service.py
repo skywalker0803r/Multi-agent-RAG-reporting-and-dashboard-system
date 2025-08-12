@@ -104,7 +104,7 @@ class DashboardService:
         # 2. Search vector DB for relevant data
         search_results = self.pinecone_index.query(
             vector=query_embedding,
-            top_k=5, # Retrieve top 5 most relevant chunks
+                        top_k=50, # Retrieve top 50 most relevant chunks
             include_metadata=True
         )
 
